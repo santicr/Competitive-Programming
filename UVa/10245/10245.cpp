@@ -27,13 +27,10 @@ int main(){
 
 		 double res = 99999;
 
-		for(int i = 0; i < points; i++){
-			int comp = array[i].x + array[i].y;
-			for(int j = i + 1; j < points; j++){
+		for(int i = 0; i < points; i++)
+			for(int j = i + 1; j < points; j++)
 				if(distance(array[i].x, array[i].y, array[j].x, array[j].y) < res)
 					res = distance(array[i].x, array[i].y, array[j].x, array[j].y);
-			}
-		}
 
 		if(res >= 10000)
 			printf("INFINITY\n");
