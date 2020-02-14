@@ -4,18 +4,6 @@
 
 using namespace std;
 
-int bin_lower(string str, char x){
-	int low = 0, high = str.size();
-	while(low + 1 < high){
-		int mid = (low + high) / 2;
-		if(str[mid] > x)
-			high = mid;
-		else
-			low = mid;
-	}
-	return low;
-}
-
 int main(){
 	string key;
 	int queries;
