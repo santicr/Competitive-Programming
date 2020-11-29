@@ -12,7 +12,7 @@ Implementación Suffix Tree
 #include <string>
  
 using namespace std;
- 
+
 string sigma, s;
 int sigmaSize;
 
@@ -152,9 +152,9 @@ Node *buildSuffixTree(){
 }
 
 int main(){
-  sigma = "abcdefghijklmnopqrstuvwxyz$";
+  sigma = "abcdefghijklmnopqrstuvwxyABCDEFGHIJKLMNOPQRSTUVWXYZ$";
   sigmaSize = sigma.length();
-  s = "abxabcbsafacadaawfaedfdawdawfadsfwfeafdafadfdfdafdadafdvdffffadasdawa$";
+  s = "GATACAGATACA$";
   Node* tree = buildSuffixTree();
 
   return 0;
