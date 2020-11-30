@@ -14,11 +14,11 @@ Implementación Suffix Tree
 using namespace std;
 
 string sigma, s;
-int sigmaSize = 5;
+int sigmaSize = 40;
 
 struct Node{
   int depth, begin, end, suffixIndex;
-  int children[5];
+  int children[40];
   int parent, suffixLink;
 
   Node(){}
@@ -61,6 +61,7 @@ void suffixIndexDFS(int n, string ac){
 
   printf("Nodo %d %d\n", tree[n].begin, tree[n].end);
   ac += get(tree[n].begin, tree[n].end);
+  cout << ac << endl;
 
   for(i = 0; i < sigmaSize; i++){
     if(tree[n].children[i] != -1){
@@ -84,7 +85,6 @@ void buildSuffixTree(){
   curr = pos;
   tree[pos++] = Node(0, 0, 0, 0, -1); 
   tree[0].suffixLink = 0;
-  curr = pos;
   lastRule = remSuffix = 0;
 
   for(i = 0; i < n; ++i){
@@ -160,15 +160,10 @@ void buildSuffixTree(){
 }
 
 int main(){
-  sigma = "ACGT$";
+  sigma = "ABCDEFGHIJKLMNOPQRSTUVWXYZ$";
   sigmaSize = sigma.length();
-  int casos;
-  cin >> casos;
-  while(casos--){
-    cin >> s;
-    s += '$';
-    buildSuffixTree();
-  }
+  s = "AAABAAA$";
+  buildSuffixTree();
 
   return 0;
 }
