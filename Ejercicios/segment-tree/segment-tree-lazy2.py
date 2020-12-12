@@ -52,19 +52,19 @@ def push(v, v1, v2):
         marked[v] = False
             
 n = 9
-build([3, 2, 5, 7, 4, 6, 2, 5, 4], 0, 0, n - 1)
+build([1, 1, 1, 1, 1, 1, 1, 1, 1], 0, 0, n - 1)
 for i in range(2 * n):
     print(str(tree[i]) + " ", end = '')
 print()
 
 print(query_pos(0, 0, n - 1, 6))
 print(query_pos(0, 0, n - 1, 8))
-update(0, 0, n - 1, 0, 5, 9)
+update(0, 0, n - 1, 0, 3, 0)
 for i in range(2 * n):
     print(str(tree[i]) + " ", end = '')
 print()
-print(query_pos(0, 0, n - 1, 4))
-print(query_pos(0, 0, n - 1, 1))
+print(query_pos(0, 0, n - 1, 3))
+print(query_pos(0, 0, n - 1, 7))
 for i in range(2 * n):
     print(str(tree[i]) + " ", end = '')
 print()

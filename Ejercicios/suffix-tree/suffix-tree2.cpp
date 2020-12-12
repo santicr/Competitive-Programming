@@ -23,7 +23,7 @@ struct Node{
 
   Node(){}
 
-  Node(int begin, int end, int depth, int parent, int suf){
+  Node(int begin, int end, int depth, int parent){
     for(int i = 0; i < sigmaSize; ++i)
       children[i] = -1;
     this->begin = begin;
@@ -31,7 +31,7 @@ struct Node{
     this->parent = parent;
     this->depth = depth;
     suffixLink = -1;
-    suffixIndex = suf;
+    suffixIndex = -1;
   }
 
   bool contains(int d){
@@ -55,23 +55,24 @@ string get(int l, int r){
   return cad;
 }
 
-void suffixIndexDFS(int n, string ac){
+void suffixIndexDFS(int n, string ac, int h){
   int i;
   bool leaf = true;
 
   printf("Nodo %d %d\n", tree[n].begin, tree[n].end);
   ac += get(tree[n].begin, tree[n].end);
-  cout << ac << endl;
 
   for(i = 0; i < sigmaSize; i++){
     if(tree[n].children[i] != -1){
       leaf = false;
-      suffixIndexDFS(tree[n].children[i], ac);
+      suffixIndexDFS(tree[n].children[i], ac, h + tree[tree[n].children[i]].length());
     }
   }
 
-  if(leaf)
+  if(leaf){
+    tree[n].suffixIndex = s.size() - h;
     printf("Hoja %d %d %s [%d]\n", tree[n].begin, tree[n].end, ac.c_str(), tree[n].suffixIndex);
+  }
 }
 
 void buildSuffixTree(){
@@ -83,7 +84,7 @@ void buildSuffixTree(){
     a[i] = sigma.find(s[i]);
 
   curr = pos;
-  tree[pos++] = Node(0, 0, 0, 0, -1); 
+  tree[pos++] = Node(0, 0, 0, 0); 
   tree[0].suffixLink = 0;
   lastRule = remSuffix = 0;
 
@@ -113,7 +114,7 @@ void buildSuffixTree(){
 	}
 
 	if(tree[curr].children[cur] == -1){
-	  tree[pos++] = Node(i, n, curDepth, curr, i);
+	  tree[pos++] = Node(i, n, curDepth, curr);
 	  tree[curr].children[cur] = pos - 1;
 	  lastRule = 2;
 	}
@@ -127,9 +128,9 @@ void buildSuffixTree(){
 	end = tree[curr].begin + curDepth - tree[curr].depth;
 
 	if(a[end] != cur){
-	  tree[pos++] = Node(tree[curr].begin, end, tree[curr].depth, tree[curr].parent, -1);
+	  tree[pos++] = Node(tree[curr].begin, end, tree[curr].depth, tree[curr].parent);
 	  int newn = pos - 1;
-	  tree[pos++] = Node(i, n, curDepth, newn, i);
+	  tree[pos++] = Node(i, n, curDepth, newn);
 	  tree[newn].children[cur] = pos - 1;
 	  tree[newn].children[a[end]] = curr;
 	  tree[tree[curr].parent].children[a[tree[curr].begin]] = newn;
@@ -155,14 +156,14 @@ void buildSuffixTree(){
   }
   
   tree[0].suffixLink = -1;
-  //solo para imprimir
-  suffixIndexDFS(0, "");
+  
+  suffixIndexDFS(0, "", 0);
 }
 
 int main(){
-  sigma = "ABCDEFGHIJKLMNOPQRSTUVWXYZ$";
+  sigma = "abcdefghijklmnopqrstuvwxyz$";
   sigmaSize = sigma.length();
-  s = "AAABAAA$";
+  s = "atgctga$";
   buildSuffixTree();
 
   return 0;

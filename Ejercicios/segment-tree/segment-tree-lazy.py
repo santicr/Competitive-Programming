@@ -36,7 +36,7 @@ def query_pos(v, l, r, pos):
 #update query
 def update(v, L, R, l, r, h):
     if l <= r:
-        if l == L and r == R: tree[v] += h
+        if l == L and r == R: tree[v] = h
         else:
             m = L + ((R - L) >> 1)
             update(v + 1, L, m, l, min(r, m), h)

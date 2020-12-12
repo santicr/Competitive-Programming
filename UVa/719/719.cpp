@@ -19,13 +19,8 @@ int main(){
 		}
 		sort(vec.begin(), vec.end());
 		for(int i = 0; i < vec.size(); i++){
-			if(vec[i].size() >= s.size() / 2){
-				cout << mapa[vec[i]] + 1 << endl;
-				break;
-			}
+			cout << vec[i] << " " << mapa[vec[i]] << endl;
 		}
-		vec.clear();
-		mapa.clear();
 	}
 
 	return 0;

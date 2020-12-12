@@ -1,12 +1,7 @@
-"""
-Segment Tree Implementation
-Carlos Ramírez
-Noviembre 7 de 2020
-
-"""
+from sys import stdin
 
 #Segment tree is represented as a list
-n, MAXN = int(), 1000
+n, MAXN = int(), 200002
 tree = [0 for _ in range(MAXN * 2)]
 
 #build the segment tree
@@ -37,16 +32,32 @@ def update(v, L, R, pos, h):
         else: update(v + 2 * (m - L + 1), m + 1, R, pos, h)
         tree[v] = tree[v + 1] + tree[v + 2 * (m - L + 1)]
 
-        
-build([3, 6, 9, -5, 4, 2, 7], 0, 0, 6)
-for i in range(14):
-    print(str(tree[i]) + " ", end = '')
-print()
+n = int(input())
+caso = 1
 
-print(sum(0, 0, 6, 2, 5))
-print(sum(0, 0, 6, 0, 4))
-update(0, 0, 6, 4, -2)
-print(sum(0, 0, 6, 0, 4))
-for i in range(14):
-    print(str(tree[i]) + " ", end = '')
-print()
+while(n != 0):
+    pot = []
+    i = 0
+
+    while(i < n):
+        resistencia = int(input())
+        pot.append(int(resistencia))
+        i += 1
+
+    if(caso > 1) : print()
+    casos = "Case {}:".format(caso)
+    print(casos)
+    build(pot, 0, 0, n - 1)
+    linea = stdin.readline()
+    linea = linea.split()
+    
+    while(linea[0] != "END"):
+        if(linea[0] == "M"):
+            print(sum(0, 0, n - 1, int(linea[1]) - 1, int(linea[2]) - 1))
+        else:
+            update(0, 0, n - 1, int(linea[1]) - 1, int(linea[2]))
+        linea = stdin.readline()
+        linea = linea.split()
+    
+    n = int(input())
+    caso += 1
