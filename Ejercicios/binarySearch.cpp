@@ -29,13 +29,13 @@ int bin_upper(vector <int> vec, int x){
 
 int main(){
 
-	vector <int> vec = {60, 90, 150, 225, 750, 810, 1500, 1560};
+	vector <int> vec = {0, 0, 1, 1, 1, 1, 1, 2, 2, 2};
 
 	cout << "El tamano del vector es: " << vec.size() << endl;
 
-	cout << bin_lower(vec, 720) << endl;
+	cout << bin_upper(vec, 1) << endl;
 
-	cout << bin_upper(vec, 8) << endl;
+	cout << bin_lower(vec, 0) << endl;
 
 	return 0;
 }
