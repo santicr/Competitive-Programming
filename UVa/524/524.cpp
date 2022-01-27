@@ -12,29 +12,13 @@ bool esPrimo(int num){
 	return false;
 }
 
-bool check(vector <int> sol){
-	int tam = sol.size();
-	if(tam >= 1 && sol[0] != 1)
-		return false;
-	
-	for(int i = 0; i < tam - 1; i++){
-		if(!esPrimo(sol[i] + sol[i + 1]))
-			return false;
-	}
-	if(tam >= 2 && !esPrimo(sol[tam - 1] + sol[0]))
-		return false;
-	return true;
-}
-
 void solve(vector <int> visitados, vector <int> sol){
 	int tam = sol.size();
-	bool flag = check(sol);
+	cout << tam << endl;
 
-	if(tam == n && flag)
-		sols.push_back(sol);
-	else if(tam < n){
-		for(int i = 1; i <= n; i++){
-			if(!visitados[i]){
+	if(tam < n){
+		for(int i = 2; i <= n; i++){
+			if(!visitados[i] && esPrimo(i + sol[tam - 1])){
 				visitados[i] = 1;
 				sol.push_back(i);
 				solve(visitados, sol);
@@ -42,6 +26,10 @@ void solve(vector <int> visitados, vector <int> sol){
 				visitados[i] = 0;
 			}
 		}
+	}
+	else{
+		if(esPrimo(sol[0] + sol[tam - 1]))
+			sols.push_back(sol);
 	}
 }
 
@@ -52,10 +40,10 @@ int main(){
 			printf("\n");
 		vector <int> visitados;
 		
-		for(int i = 0; i <= n; i++)
+		for(int i = 0; i <= n + 4; i++)
 			visitados.push_back(0);
 
-		solve(visitados, vector <int> ());
+		solve(visitados, vector <int> (1));
 
 		cout << "Case " << casos++ << ":" << '\n';
 		for(int i = 0; i < sols.size(); i++){
@@ -70,8 +58,6 @@ int main(){
 
 		sols = vector <vector<int>> ();
 	}
-
-
 
 	return 0;
 }
