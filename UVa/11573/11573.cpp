@@ -21,11 +21,11 @@ int solve(pair <int, int> pi, pair <int, int> pf){
 	map <pair<int, int>, int> vis;
 	pair <int,int> u, v;
 	bool flag = false;
-	int ux, uy, vx, vy, val, ans = -1;
+	int ux, uy, vx, vy, val, ans = INT_MAX;
 	
 	for(int i = 0; i < n; i++)
 		for(int j = 0; j < m; j++)
-			vis[{i, j}] = -1;
+			vis[{i, j}] = INT_MAX;
 	
 	cola.push(pi);
 	vis[pi] = 0;
@@ -39,34 +39,26 @@ int solve(pair <int, int> pi, pair <int, int> pf){
 		vx = ux + dirx[val];
 		vy = uy + diry[val];
 
-		if(cond(vx, vy) && vis[{vx, vy}] == -1 && dist(vx, vy, pf.first, pf.second) < dist(ux, uy, pf.first, pf.second) && vx == pf.first && vy == pf.second){
+		if(cond(vx, vy) && vis[{ux, uy}] < vis[{vx, vy}] && vx == pf.first && vy == pf.second){
 			vis[{vx, vy}] = vis[{ux, uy}];
-			ans = vis[{vx, vy}];
-			flag = true;
-			break;
+			ans = min(ans, vis[{vx, vy}]);
 		}
-		else if(cond(vx, vy) && vis[{vx, vy}] == -1 && dist(vx, vy, pf.first, pf.second) < dist(ux, uy, pf.first, pf.second)){
+		else if(cond(vx, vy) && vis[{ux, uy}] < vis[{vx, vy}]){
 			vis[{vx, vy}] = vis[{ux, uy}];
 			cola.push({vx, vy});
 		}
-		else{
-			for(int i = 0; i < 8; i++){
-				vx = dirx[i] + ux;
-				vy = diry[i] + uy;
-				if(cond(vx, vy) && vis[{vx, vy}] == -1 && vx == pf.first && vy == pf.second){
-					vis[{vx, vy}] = vis[{ux, uy}] + 1;
-					ans = vis[{vx, vy}];
-					flag = true;
-					break;
-				}
-				else if(cond(vx, vy) && vis[{vx, vy}] == -1){
-					vis[{vx, vy}] = vis[{ux, uy}] + 1;
-					cola.push({vx, vy});
-				}
+		for(int i = 0; i < 8; i++){
+			vx = dirx[i] + ux;
+			vy = diry[i] + uy;
+			if(cond(vx, vy) && vis[{ux, uy}] + 1 < vis[{vx, vy}] && vx == pf.first && vy == pf.second){
+				vis[{vx, vy}] = vis[{ux, uy}] + 1;
+				ans = min(ans, vis[{vx, vy}]);
+			}
+			else if(cond(vx, vy) && vis[{ux, uy}] + 1 < vis[{vx, vy}]){
+				vis[{vx, vy}] = vis[{ux, uy}] + 1;
+				cola.push({vx, vy});
 			}
 		}
-		if(flag)
-			break;
 
 		cola.pop();
 	}
