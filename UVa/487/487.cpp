@@ -7,6 +7,13 @@ vector <string> vec;
 vector <string> sols;
 map <string, int> vsols;
 
+bool c(string a, string b){
+	int as = a.size(), bs = b.size();
+	if(as != bs)
+		return as < bs;
+	return a < b;
+}
+
 bool cond(int x, int y, vector <pair<int,int>> sol){
 	bool ans = false;
 	int m = sol.size();
@@ -64,7 +71,6 @@ void bt(map <pair<int,int>, int> vis, vector <pair<int,int>> sol){
 
 int main(){
 	int cases, i;
-	char c;
 	string str;
 
 	cin >> cases;
@@ -84,10 +90,7 @@ int main(){
 
 		bt(map <pair<int,int>, int>(), vector <pair<int,int>> ());
 
-		sort(sols.begin(), sols.end(), [](const string& a, const string& b){
-			if(a.size() == b.size()) return a < b;
-			return a.size() < b.size();
-		});
+		sort(sols.begin(), sols.end(), c);
 		for(int i = 0; i < sols.size(); i++){
 			cout << sols[i] << endl;
 		}
