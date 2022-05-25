@@ -21,7 +21,7 @@ bool solve(){
 		return false;
 
 	int act = 0, i = 0;
-	res = 0;
+	res = 1;
 	while(i < n){
 		act += petrol[i];
 		act -= needed[i];
