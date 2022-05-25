@@ -1,74 +1,62 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
+#include <bits/stdc++.h>
+//Author: Santiago Caicedo Rojas
+//Github: https://github.com/santicr
+//UVa profile: https://uhunt.onlinejudge.org/id/1033486
 
 using namespace std;
 
-struct A{
-	int a;
-	int pos;
-};
+int petrol[100003];
+int needed[100003];
+int n, res = -1;
 
-void print(vector <int> vec){
-	int j;
-	for(j = 0; j < vec.size(); j++){
-		printf("%d ", vec[j]);
-	}
-	printf("\n");
-}
+bool solve(){
+	int pe = 0, ne = 0;
+	bool ans;
 
-void print2(vector <A> vec){
-	int j;
-	for(j = 0; j < vec.size(); j++){
-		printf("%d -> pos %d ", vec[j].a, vec[j].pos);
+	for(int i = 0; i < n; i++){
+		pe += petrol[i];
+		ne += needed[i];
 	}
-	printf("\n");
+	if(ne > pe)
+		return false;
+
+	int act = 0, i = 0;
+	res = 0;
+	while(i < n){
+		act += petrol[i];
+		act -= needed[i];
+		i++;
+		if(act < 0){
+			act = 0;
+			res = i + 1;
+		}
+	}
+
+
+	return true;
 }
 
 int main(){
-	int cases, i, j, k;
+	int cases;
+	bool ans;
 	cin >> cases;
-	for(i = 0; i < cases; i++){
-		int available, needed, N;
-		vector <A> avail;
-		vector <int> need;
-		cin >> N;
-		for(j = 0; j < N; j++){
-			A temp;
-			cin >> available;
-			temp.a = available;
-			temp.pos = j;
-			avail.push_back(temp);
-		}
-		for(j = 0; j < N; j++){
-			cin >> needed;
-			need.push_back(needed);
-		}
-		bool paso = false;
-		while(N--){
-			int temp = 0, res;
-			for(j = 0; j < need.size(); j++){
-				temp += avail[j].a;
-				temp -= need[j];
-				if(temp < 0)
-					break;
-				else if(j == need.size() - 1 && temp >= 0){
-					res = avail[0].pos;
-					printf("Case %d: Possible from station %d\n", i + 1, 
-						res + 1);
-					paso = true;
-					break;
-				}
-			}
-			need.push_back(need[0]);
-			need.erase(need.begin());
-			avail.push_back(avail[0]);
-			avail.erase(avail.begin());
-			if(paso == true)
-				break;
-		}
-		if(paso == false)
+
+	for(int i = 0; i < cases; i++){
+		cin >> n;
+
+		for(int j = 0; j < n; j++)
+			cin >> petrol[j];
+
+		for(int j = 0; j < n; j++)
+			cin >> needed[j];
+
+		bool ans = solve();
+		if(!ans)
 			printf("Case %d: Not possible\n", i + 1);
+		else
+			printf("Case %d: Possible from station %d\n", i + 1, res);
+		res = -1;
 	}
+
 	return 0;
 }
