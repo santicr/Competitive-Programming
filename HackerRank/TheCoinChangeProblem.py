@@ -13,11 +13,9 @@ def solve(n, m):
 	if (n, m) in memo:
 		ans = memo[(n, m)]
 	else:
-		if n == 0 and m == 0:
+		if m == 0:
 			ans = 1
-		elif n > 0 and m == 0:
-			ans = 1
-		elif n == 0 and m > 0:
+		elif n == 0:
 			ans = 0
 		elif n > 0 and m - arr[n - 1] >= 0:
 			ans = max(solve(n - 1, m - arr[n - 1]) + solve(n - 1, m), solve(n, m - arr[n - 1]) + solve(n - 1, m))
