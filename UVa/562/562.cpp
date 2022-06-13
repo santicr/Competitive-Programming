@@ -2,48 +2,47 @@
 
 using namespace std;
 
-int monedas[105] = {0}, acum = 0;
-int memo[105] = {-1};
+int cases, n, acum = 0, ans = 0, obj;
+vector <int> vec(101);
+int memo[101][50001];
 
-void inicializar(){
-	int acum = 0;
-	for(int i = 0; i < 105; i++)
-		memo[i] = -1;
-}
-
-int solve(int m){
-	int ans, p1, p2, res1, res2, p3, p4;
-
-	if(memo[m] != -1)
-		ans = memo[m];
+int solve(int n, int m){
+	int ans;
+	if(memo[n][m] != -1)
+		ans = memo[n][m];
 	else{
-		if(m == 0)
-			ans = 0;
-		else if(m > 0){
-			p1 = solve(m - 1) + monedas[m - 1];
-			p2 = solve(m - 1);
-			
-		}
+		if(n == 0)
+			ans = m;
+		else if(n != 0 && m + vec[n - 1] <= obj)
+			ans = max(solve(n - 1, m + vec[n - 1]), solve(n - 1, m));
+		else if(n != 0 && m + vec[n - 1] > obj)
+			ans = solve(n - 1, m);
+		memo[n][m] = ans;
 	}
 
 	return ans;
 }
 
 int main(){
-	int n, m, val;
-	cin >> n;
-	while(n--){
-		cin >> m;
-		inicializar();
+	cin >> cases;
 
-		for(int i = 0; i < m; i++){
-			cin >> monedas[i];
-			acum += monedas[i];
+	while(cases--){
+		cin >> n;
+
+		for(int i = 0; i < n; i++){
+			cin >> vec[i];
+			acum += vec[i];
 		}
 
-		cout << solve(m) << endl;;
-	}
+		for(int i = 0; i < n + 1; i++)
+			for(int j = 0; j < acum + 1; j++)
+				memo[i][j] = -1;
 
+		obj = acum / 2;
+		ans = solve(n, 0);
+		printf("%d\n", acum - ans * 2);
+		acum = 0;
+	}
 
 	return 0;
 }
