@@ -29,16 +29,6 @@ public:
         m = vec2.size();
         int c = 0, val, i = 0;
         
-        for(int i = 0; i < n; i++){
-            cout << vec1[i] << " ";
-        }
-        cout << endl;
-        
-        for(int i = 0; i < m; i++){
-            cout << vec2[i] << " ";
-        }
-        cout << endl;
-        
         i = 0;
         
         while(i < n || i < m){
