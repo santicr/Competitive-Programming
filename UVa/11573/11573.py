@@ -6,6 +6,7 @@ grid = []
 def bfs(ns, nf):
 	global n, m, grid
 	q = [ns]
+	vis = {}
 	padres = [[float("inf") for _ in range(m)] for _ in range(n)]
 	padres[ns[0]][ns[1]] = 0
 	dx = [0, 1, 0, -1, 1, 1, -1, -1]
@@ -22,6 +23,7 @@ def bfs(ns, nf):
 		if nxn >= 0 and nxn < n and nyn >= 0 and nyn < m and padres[x][y] < padres[nxn][nyn]:
 			q.append((nxn, nyn))
 			padres[nxn][nyn] = padres[x][y]
+			vis[(nxn, nyn)] = 1
 
 		for i in range(8):
 			nx = dx[i] + x
@@ -30,6 +32,7 @@ def bfs(ns, nf):
 			if nx >= 0 and nx < n and ny >= 0 and ny < m and padres[x][y] + 1 < padres[nx][ny]:
 				q.append((nx, ny))
 				padres[nx][ny] = padres[x][y] + 1
+				vis[(nx, ny)] = 1
 
 	return padres[nf[0]][nf[1]]
 
