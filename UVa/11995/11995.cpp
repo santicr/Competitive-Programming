@@ -1,60 +1,64 @@
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
-struct P{
-	int num;
-	int pos;
-};
-
-bool IsIn(vector <P> vec, int num){
-	for(auto it = vec.begin(); it != vec.end(); it++){
-		if(num == it -> num)
-			return true;
-	}
-	return false;
-}
-
-bool IsQueue(vector <P> vec, int num){
-	for(auto it = vec.begin(); it != vec.end(); it++){
-		if(num == it -> num && 0 == it -> pos)
-			return true;
-	}
-	return false;
-}
-
-bool IsStack(vector <P> vec, int num){
-	for(auto it = vec.begin(); it != vec.end(); it++){
-		if(num == it -> num && (vec.size() - 1) == it -> pos)
-			return true;
-	}
-	return false;
-}
-
 int main(){
-	int n;
-	while(cin >> n){
-		vector <P> vec;
-		int pos = 0;
-		while(n--){
-			int num1, num2;
-			scanf("%d %d", &num1, &num2);
-			if(num1 == 1){
-				P temp;
-				temp.num = num2;
-				temp.pos = pos;
-				vec.push_back(temp);
-				pos++;
-			}
-			if(num1 == 2){
-				if(!(IsIn(vec, num2))){
-					printf("impossible\n");
-					break;
-				}
+	int ops, x, y;
+	map <int, string> res = {{0, "stack"}, {1, "queue"}, {2, "priority queue"}};
 
+	while(cin >> ops){
+		stack <int> s;
+		queue <int> q;
+		priority_queue <int> pq;
+		int possi[] = {1, 1, 1};
+		vector <int> vec;
+
+		while(ops--){
+			cin >> x >> y;
+
+			if(x == 1){
+				pq.push(y);
+				q.push(y);
+				s.push(y);
+			}
+			else if(x == 2){
+				if(!pq.empty() && y != pq.top())
+					possi[2] = 0;
+				
+				else if(pq.empty())
+					possi[2] = 0;
+				
+				if(!q.empty() && y != q.front())
+					possi[1] = 0;
+				
+				else if(q.empty())
+					possi[1] = 0;
+				
+				if(!s.empty() && y != s.top())
+					possi[0] = 0;
+				
+				else if(s.empty())
+					possi[0] = 0;
+
+				if(!q.empty()) q.pop();
+				if(!pq.empty()) pq.pop();
+				if(!s.empty()) s.pop();
+				
 			}
 		}
+		
+		for(int i = 0; i < 3; i++){
+			if(possi[i])
+				vec.push_back(i);
+		}
+
+		if(vec.size() == 1)
+			cout << res[vec[0]] << endl;
+		else if(vec.size() >= 2)
+			cout << "not sure" << endl;
+		else
+			cout << "impossible" << endl;
+
 	}
 
 	return 0;
