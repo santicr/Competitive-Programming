@@ -3,38 +3,38 @@
 using namespace std;
 
 int n;
-vector<vector<pair<int, int> > > grafo(50000);
+vector<vector<pair<int, int> > > adj(50000);
 vector<int> padres(50000);
-vector<int> distancias(50000);
+vector<int> d(50000);
 
 void inicializar(int nodo){
 	for(int i = 0; i < n; i++){
 		padres[i] = -1;
-		distancias[i] = INT_MAX;
+		d[i] = INT_MAX;
 	}
 
-	distancias[nodo] = 0;
+	d[nodo] = 0;
 }
 
 void dijkstra(int nodo){
-	int peso, costo, val;
-	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>> > cola;
+	int w, cost, u;
+	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>> > q;
 	inicializar(nodo);
-	cola.push(make_pair(0, nodo));
+	q.push(make_pair(0, nodo));
 
-	while(!cola.empty()){
-		costo = cola.top().first;
-		val = cola.top().second;
-		cola.pop();
+	while(!q.empty()){
+		cost = q.top().first;
+		u = q.top().second;
+		q.pop();
 
-		if(costo == distancias[val]){
-			for(int i = 0; i < grafo[val].size(); i++){
-				int aux = grafo[val][i].first;
-				peso = grafo[val][i].second;
-				if(distancias[val] != INT_MAX && distancias[val] + peso < distancias[aux]){
-					distancias[aux] = distancias[val] + peso;
-					padres[aux] = val;
-					cola.push(make_pair(distancias[aux], aux));
+		if(cost == d[u]){
+			for(int i = 0; i < adj[u].size(); i++){
+				int aux = adj[u][i].first;
+				w = adj[u][i].second;
+				if(d[u] != INT_MAX && d[u] + w < d[aux]){
+					d[aux] = d[u] + w;
+					padres[aux] = u;
+					q.push(make_pair(d[aux], aux));
 				}
 			}
 		}
