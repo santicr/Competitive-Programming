@@ -2,97 +2,78 @@
 
 using namespace std;
 
-int cases, nodos, lineas, nodo, n1, n2, impTotal;
-vector <vector <int>> adj(10004);
-int importantes[10005];
-map <int, int> mapa;
-vector <int> impor;
+int cases, n, m, temp, node_min;
+map <int, int> important;
+vector <vector<int>> adj;
+float min_el, ans;
 
-void BFS(int val){
-	queue <int> cola;
-	cola.push(val);
-	int visitados[10003] = {0};
-	int valores[10004] = {0};
-	int padres[10005] = {0};
-	visitados[val] = 1;
-	int ans = 0, imp = 1;
-	padres[val] = -1;
-	valores[val] = 0;
+float bfs(int node){
+	queue <int> q;
+	vector <int> vis(n, -1);
+	int u, v;
+	float suma = 0, prom = 1;
 
-	while(!cola.empty()){
-		int u, v;
-		u = cola.front();
+	q.push(node);
+	vis[node] = 0;
+
+	while(!q.empty()){
+		u = q.front();
+		q.pop();
 
 		for(int i = 0; i < adj[u].size(); i++){
 			v = adj[u][i];
-			if(!visitados[v]){
-				visitados[v] = 1;
-				padres[v] = u;
-				valores[v] = valores[u] + 1;
-				imp = importantes[v] > 1 ? imp += 1 : imp;
-				if(importantes[v] > 1)
-					ans = ans < valores[v] ? ans = valores[v] : ans;
-				cola.push(v);
+			if(vis[v] == -1){
+				vis[v] = vis[u] + 1;
+				q.push(v);
+				prom = important[v] > 1 ? prom + 1: prom;
+				suma = important[v] > 1 ? suma + vis[v]: suma;
 			}
-			if(imp == impTotal)
-				break;
 		}
-		if(imp == impTotal)
-			break;
-
-		cola.pop();
 	}
 
-	mapa[val] = ans;
+	return suma / prom;
 }
 
 int main(){
 	cin >> cases;
 
-	for(int i = 0; i < cases; i++){
-		cin >> nodos >> lineas;
+	while(cases--){
+		cin >> n >> m;
 
-		for(int i = 0; i <= nodos + 1; i++){
-			importantes[i] = 0;
-			adj[i] = vector <int> ();
+		adj = vector<vector<int>>(n, vector<int>( ));
+		important = map <int, int>();
+
+		for(int i = 0; i < m; i++){
+			vector <int> nodes;
+
+			while(cin >> temp && temp)
+				nodes.push_back(temp);
+
+			for(int i = 1; i < nodes.size(); i++){
+				adj[nodes[i - 1] - 1].push_back(nodes[i] - 1);
+				adj[nodes[i] - 1].push_back(nodes[i - 1] - 1);
+				important[nodes[i - 1] - 1]++;
+				if(i == nodes.size() - 1)
+					important[nodes[i] - 1]++;
+			}
 		}
+		
+		min_el = FLT_MAX;
+		node_min = -1;
 
-		impor = vector <int> ();
-		mapa.clear();
-		impTotal = 0;
-
-		for(int j = 0; j < lineas; j++){
-			cin >> nodo;
-			while(nodo != 0){
-				n1 = nodo;
-				importantes[n1]++;
-				impTotal = importantes[n1] > 1 ? impTotal += 1: impTotal;
-				if(importantes[n1] > 1)
-					impor.push_back(n1);
-				cin >> nodo;
-				n2 = nodo;
-
-				if(n2 != 0){
-					adj[n1].push_back(n2);
-					adj[n2].push_back(n1);
+		for(auto it = important.begin(); it != important.end(); it++){
+			int k = it -> first;
+			int v = important[k];
+			if(v > 1){
+				ans = bfs(k);
+				if(ans < min_el){
+					node_min = k + 1;
+					min_el = ans;
 				}
 			}
 		}
 
-		int ans = -1, minElement = INT_MAX;
-
-		for(int j = 0; j < impTotal; j++)
-			BFS(impor[j]);
-
-		for (auto it = mapa.begin(); it != mapa.end(); it++){
-			printf("Primer elemento -> %d, Segundo elemento -> %d\n", it -> first, it -> second);
-			if(minElement > it -> second){
-				minElement = it -> second;
-				ans = it -> first;
-			}
-		}
-
-		printf("Krochanska is in: %d\n", ans);
+		printf("Krochanska is in: %d\n", node_min);
 	}
 
 	return 0;
