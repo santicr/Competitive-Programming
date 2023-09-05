@@ -2,168 +2,132 @@
 
 using namespace std;
 
-int visited[1000][1000];
-vector <string> graph;
-int n, fight_pos = 0;
-vector <pair <int, int>> sectors;
+int n, fighter_pos_num = 0;
 
-pair <int, int> BFSaux(int x, int y, int num){
-	pair <int, int> ans;
-	ans = make_pair(0, 0);
-	int bc = 0, pc = 0;
-	bc = num == 1 ? bc += 1 : bc;
-	pc = num == 2 ? pc += 1 : pc;
-	queue <pair <int, int>> q;
-	pair <int, int> p;
-	int nx, ny;
-	int dx[] = {0, 0, 1, -1};
-	int dy[] = {1, -1, 0, 0};
+int mini_bfs (int x, int y, map <pair <int, int>, int> &vis, vector <string> &mat) {
+    int dx[] = {1, 0, 0, -1};
+    int dy[] = {0, -1, 1, 0};
+    int nx, ny;
+    queue <pair <int, int>> q;
+    map <char, int> is_present;
 
-	q.push(make_pair(x, y));
-	visited[x][y] = 1;
+    q.push({x, y});
 
-	while(!q.empty()){
-		p = q.front();
-		q.pop();
+    while (!q.empty()) {
+        x = q.front().first;
+        y = q.front().second;
 
-		for(int i = 0; i < 4; i++){
-			nx = dx[i] + p.first;
-			ny = dy[i] + p.second;
+        for (int i = 0; i < 4; i++) {
+            nx = dx[i] + x;
+            ny = dy[i] + y;
 
-			if(0 <= nx && nx < n && 0 <= ny && ny < n){
-				if(graph[nx][ny] == 'B' && !visited[nx][ny]){
-					visited[nx][ny] = 1;
-					bc++;
-					q.push(make_pair(nx, ny));
-				}
-				
-				else if(graph[nx][ny] == 'P' && !visited[nx][ny]){
-					visited[nx][ny] = 1;
-					pc++;
-					q.push(make_pair(nx, ny));
-				}
-			}
-		}
-	}
+            if (nx >= 0 && nx < n && ny >= 0 && ny < n && !vis[{nx, ny}] && (mat[nx][ny] == 'B' || mat[nx][ny] == 'P')) {
+                is_present[mat[nx][ny]] = 1;
+                q.push({nx, ny});
+                vis[{nx, ny}] = 1;
+            }
+        }
 
-	if(pc > 0 && bc > 0)
-		fight_pos += 2;
-	if(pc > 0)
-		ans.first = 1;
-	if(bc > 0)
-		ans.second = 1;
+        q.pop();
+    }
 
-	return ans;
+    if (is_present['B'] && is_present['P'])
+        fighter_pos_num += 2;
 
+    return is_present['B'] && is_present['P'];
 }
 
-pair <int, int> BFS(int x, int y){
-	queue <pair <int, int>> q;
-	pair <int, int> p, r, temp;
-	r = make_pair(0, 0);
-	int nx, ny;
-	int dx[] = {0, 0, 1, -1, 1, -1, 1, -1};
-	int dy[] = {1, -1, 0, 0, 1, -1, -1, 1};
+pair <int, int> bfs (int x, int y, map <pair <int, int>, int> &vis, vector <string> &mat) {
+    int dx[] = {1, 0, 0, -1};
+    int dy[] = {0, -1, 1, 0};
+    int nx, ny;
+    queue <pair <int, int>> q;
+    int freedom_fighters = 0;
+    int enemy_groups = 0;
 
-	q.push(make_pair(x, y));
-	visited[x][y] = 1;
+    q.push({x, y});
 
-	while(!q.empty()){
-		p = q.front();
-		q.pop();
+    while (!q.empty()) {
+        x = q.front().first;
+        y = q.front().second;
 
-		for(int i = 0; i < 8; i++){
-			nx = dx[i] + p.first;
-			ny = dy[i] + p.second;
+        for (int i = 0; i < 4; i++) {
+            nx = dx[i] + x;
+            ny = dy[i] + y;
 
-			if(0 <= nx && nx < n && 0 <= ny && ny < n){
-				if(graph[nx][ny] == '*' && !visited[nx][ny]){
-					visited[nx][ny] = 1;
-					q.push(make_pair(nx, ny));
-				}
-				else if((graph[nx][ny] == 'B' || graph[nx][ny] == 'P') && !visited[nx][ny]){
-					if(graph[nx][ny] == 'B'){
-						temp = BFSaux(nx, ny, 1);
-						r.first += temp.first;
-						r.second += temp.second;
-					}
-					else{
-						temp = BFSaux(nx, ny, 2);
-						r.first += temp.first;
-						r.second += temp.second;
-					}
-				}
-			}
-		}
-	}
+            if (nx >= 0 && nx < n && ny >= 0 && ny < n && !vis[{nx, ny}] && (mat[nx][ny] == '*' || mat[nx][ny] == 'B' || mat[nx][ny] == 'P')) {
+                vis[{nx, ny}] = 1;
+                
+                if (mat[nx][ny] == 'B') {
+                    int res = mini_bfs(nx, ny, vis, mat);
+                    if (res){
+                        freedom_fighters += res;
+                        enemy_groups += res;
+                    }
+                    else {
+                        freedom_fighters++;
+                    }
+                }
+                else if (mat[nx][ny] == 'P') {
+                    int res = mini_bfs (nx, ny, vis, mat);
+                    if (res) {
+                        freedom_fighters += res;
+                        enemy_groups += res;
+                    }
+                    else {
+                        enemy_groups++;
+                    }
+                }
+                else
+                    q.push({nx, ny});
+            }
+        }
 
-	return r;
+        q.pop();
+    }
+
+    return make_pair (freedom_fighters, enemy_groups);
 }
 
-int main(){
-	while(cin >> n && n){
-		string str;
-		int index = 0, nx, ny;
-		pair <int, int> temp;
-		int dx[] = {0, 0, 1, -1};
-		int dy[] = {1, -1, 0, 0};
+void solve(vector <string> &mat) {
+    map <pair <int, int>, int> vis;
+    map <int, pair <int, int> > ans;
+    int sectors = 0;
 
-		for(int i = 0; i < 55; i++){
-			for(int j = 0; j < 55; j++){
-				visited[i][j] = 0;
-			}
-		}
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            char c = mat[i][j];
+            if (c == '*' && !vis[{i, j}]) {
+                vis[{i, j}] = 1;
+                pair <int, int> sector_ans = bfs(i, j, vis, mat);
+                sectors++;
+                ans[sectors] = sector_ans;
+            }
+        }
+    }
 
-		for(int i = 0; i < n; i++){
-			cin >> str;
-			graph.push_back(str);
-		}
+    for (int i = 0; i < sectors; i++)
+        printf("Sector #%d: contain %d freedom fighter group(s) & %d enemy group(s)\n", i + 1, ans[i + 1].first, ans[i + 1].second);
+    printf("Total %d group(s) are in fighting position.\n\n", fighter_pos_num);
 
-		for(int i = 0; i < n; i++){
-			for(int j = 0; j < n; j++){
-				if(graph[i][j] == '*' && !visited[i][j]){
-					bool nuevo = false;
+    return;
+}
 
-					for(int k = 0; k < 4; k++){
-						nx = dx[k] + i;
-						ny = dy[k] + j;
+int main() {
+    string line;
+    vector <string> mat;
 
-						if(0 <= nx && nx < n && 0 <= ny && ny < n){
-							if(graph[nx][ny] == '.')
-								nuevo = true;
-						}
+    while(cin >> n, n) {
+        for (int i = 0; i < n; i++) {
+            cin >> line;
+            mat.push_back(line);
+        }
 
-					}
-					if(i == 0 && j == 0)
-						nuevo = true;
+        solve(mat);
+        fighter_pos_num = 0;
+        mat.clear();
 
-					if(nuevo)
-						sectors.push_back(BFS(i, j));
-					else{
-						temp = BFS(i, j);
-						temp.first += sectors[sectors.size() - 1].first;
-						temp.second += sectors[sectors.size() - 1].second;
-						sectors[sectors.size() - 1].first = temp.first;
-						sectors[sectors.size() - 1].second = temp.second;
-					}
-				}
-			}
-		}
+    }
 
-		for(int i = 0; i < sectors.size(); i++){
-			cout << "Sector #" << i + 1 << ": contain " << sectors[i].second << " freedom fighter group(s) & " << 
-			sectors[i].first << " enemy group(s)" << '\n';
-		}
-
-		cout << "Total " << fight_pos << " group(s) are in fighting position." << '\n';
-		
-		fight_pos = 0;
-		sectors.clear();
-		graph.clear();
-
-		cout << endl;
-
-	}
-
-	return 0;
+    return 0;
 }
