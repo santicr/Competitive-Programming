@@ -2,18 +2,25 @@
 
 using namespace std;
 
-int n, fighter_pos_num = 0;
+int n;
+vector <string> mat;
+map <pair <int, int>, int> vis;
 
-int mini_bfs (int x, int y, map <pair <int, int>, int> &vis, vector <string> &mat) {
-    int dx[] = {1, 0, 0, -1};
-    int dy[] = {0, -1, 1, 0};
-    int nx, ny;
+int fighter_pos = 0;
+int b_group = 0;
+int p_group = 0;
+
+void mini_bfs(int x, int y, map <pair <int, int>, int> &vis) {
+    int dx[] = {1, 0, -1, 0}, nx;
+    int dy[] = {0, 1, 0, -1}, ny;
     queue <pair <int, int>> q;
-    map <char, int> is_present;
 
-    q.push({x, y});
+    vis[make_pair(x, y)] = 1;
+    q.push(make_pair(x, y));
+    int b = 0;
+    int p = 0;
 
-    while (!q.empty()) {
+    while(!q.empty()) {
         x = q.front().first;
         y = q.front().second;
 
@@ -21,112 +28,118 @@ int mini_bfs (int x, int y, map <pair <int, int>, int> &vis, vector <string> &ma
             nx = dx[i] + x;
             ny = dy[i] + y;
 
-            if (nx >= 0 && nx < n && ny >= 0 && ny < n && !vis[{nx, ny}] && (mat[nx][ny] == 'B' || mat[nx][ny] == 'P')) {
-                is_present[mat[nx][ny]] = 1;
-                q.push({nx, ny});
-                vis[{nx, ny}] = 1;
-            }
-        }
-
-        q.pop();
-    }
-
-    if (is_present['B'] && is_present['P'])
-        fighter_pos_num += 2;
-
-    return is_present['B'] && is_present['P'];
-}
-
-pair <int, int> bfs (int x, int y, map <pair <int, int>, int> &vis, vector <string> &mat) {
-    int dx[] = {1, 0, 0, -1};
-    int dy[] = {0, -1, 1, 0};
-    int nx, ny;
-    queue <pair <int, int>> q;
-    int freedom_fighters = 0;
-    int enemy_groups = 0;
-
-    q.push({x, y});
-
-    while (!q.empty()) {
-        x = q.front().first;
-        y = q.front().second;
-
-        for (int i = 0; i < 4; i++) {
-            nx = dx[i] + x;
-            ny = dy[i] + y;
-
-            if (nx >= 0 && nx < n && ny >= 0 && ny < n && !vis[{nx, ny}] && (mat[nx][ny] == '*' || mat[nx][ny] == 'B' || mat[nx][ny] == 'P')) {
-                vis[{nx, ny}] = 1;
+            if (nx >= 0 && nx < n && ny >= 0 && ny < n) {
+                char s = mat[nx][ny];
                 
-                if (mat[nx][ny] == 'B') {
-                    int res = mini_bfs(nx, ny, vis, mat);
-                    if (res){
-                        freedom_fighters += res;
-                        enemy_groups += res;
-                    }
-                    else {
-                        freedom_fighters++;
-                    }
+                if (s == 'B' && !vis[make_pair(nx, ny)]) {
+                    vis[make_pair(nx, ny)] = 1;
+                    b = 1;
+                    q.push(make_pair(nx, ny));
                 }
-                else if (mat[nx][ny] == 'P') {
-                    int res = mini_bfs (nx, ny, vis, mat);
-                    if (res) {
-                        freedom_fighters += res;
-                        enemy_groups += res;
-                    }
-                    else {
-                        enemy_groups++;
-                    }
+                else if (s == 'P' && !vis[make_pair(nx, ny)]) {
+                    vis[make_pair(nx, ny)] = 1;
+                    p = 1;
+                    q.push(make_pair(nx, ny));
                 }
-                else
-                    q.push({nx, ny});
             }
         }
 
         q.pop();
     }
 
-    return make_pair (freedom_fighters, enemy_groups);
+    fighter_pos = p && b ? fighter_pos + 1: fighter_pos;
 }
 
-void solve(vector <string> &mat) {
-    map <pair <int, int>, int> vis;
-    map <int, pair <int, int> > ans;
-    int sectors = 0;
+void bfs(int x, int y) {
+    int dx[] = {1, 0, -1, 0}, nx;
+    int dy[] = {0, 1, 0, -1}, ny;
+    queue <pair <int, int>> q;
+    map <pair <int, int>, int> vis_b;
+    map <pair <int, int>, int> vis_p;
+    vector <pair <int, int>> b_v, p_v;
+    q.push(make_pair(x, y));
+
+    while (!q.empty()) {
+        x = q.front().first;
+        y = q.front().second;
+
+        for (int i = 0; i < 4; i++) {
+            nx = dx[i] + x;
+            ny = dy[i] + y;
+
+            if (nx >= 0 && nx < n && ny >= 0 && ny < n && !vis[make_pair(nx, ny)]) {
+                char s = mat[nx][ny];
+                vis[make_pair(nx, ny)] = 1;
+
+                if (s == 'B') {
+                    b_v.push_back(make_pair(nx, ny));
+                    q.push(make_pair(nx, ny));
+                }
+
+                else if (s == 'P') {
+                    p_v.push_back(make_pair(nx, ny));
+                    q.push(make_pair(nx, ny));
+                }
+                else if (s == '*') {
+                    q.push(make_pair(nx, ny));
+                }
+            }
+        }
+        q.pop();
+    }
+
+    for (int i = 0; i < b_v.size(); i++) {
+        if (!vis_b[b_v[i]]) {
+            vis_b[b_v[i]] = 1;
+            b_group++;
+            mini_bfs(b_v[i].first, b_v[i].second, vis_b);
+        }
+    }
+
+    for (int i = 0; i < p_v.size(); i++) {
+        if (!vis_p[p_v[i]]) {
+            vis_p[p_v[i]] = 1;
+            p_group++;
+            mini_bfs(p_v[i].first, p_v[i].second, vis_p);
+        }
+    }
+
+}
+
+void solve() {
+    int sector = 0;
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            char c = mat[i][j];
-            if (c == '*' && !vis[{i, j}]) {
-                vis[{i, j}] = 1;
-                pair <int, int> sector_ans = bfs(i, j, vis, mat);
-                sectors++;
-                ans[sectors] = sector_ans;
+            char s = mat[i][j];
+            if (s == '*' and !vis[make_pair(i, j)]) {
+                vis[make_pair(i, j)] = 1;
+                bfs(i, j);
+                printf("Sector #%d: contain %d freedom fighter group(s) & %d enemy group(s)\n", ++sector, b_group, p_group);
+                b_group = 0;
+                p_group = 0;
             }
         }
     }
 
-    for (int i = 0; i < sectors; i++)
-        printf("Sector #%d: contain %d freedom fighter group(s) & %d enemy group(s)\n", i + 1, ans[i + 1].first, ans[i + 1].second);
-    printf("Total %d group(s) are in fighting position.\n\n", fighter_pos_num);
-
-    return;
+    printf("Total %d group(s) are in fighting position.\n\n", fighter_pos);
 }
 
-int main() {
+int main(){
     string line;
-    vector <string> mat;
 
-    while(cin >> n, n) {
-        for (int i = 0; i < n; i++) {
+    while (cin >> n, n) {
+        for (int i = 0; i < n; i++){
             cin >> line;
             mat.push_back(line);
         }
+        solve();
+        mat = vector <string> ();
+        vis = map <pair <int, int>, int> ();
 
-        solve(mat);
-        fighter_pos_num = 0;
-        mat.clear();
-
+        fighter_pos = 0;
+        b_group = 0;
+        p_group = 0;
     }
 
     return 0;
