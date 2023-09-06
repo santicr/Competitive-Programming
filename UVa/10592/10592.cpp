@@ -14,6 +14,7 @@ void mini_bfs(int x, int y, map <pair <int, int>, int> &vis) {
     int dx[] = {1, 0, -1, 0}, nx;
     int dy[] = {0, 1, 0, -1}, ny;
     queue <pair <int, int>> q;
+    char init = mat[x][y];
 
     vis[make_pair(x, y)] = 1;
     q.push(make_pair(x, y));
@@ -30,6 +31,11 @@ void mini_bfs(int x, int y, map <pair <int, int>, int> &vis) {
 
             if (nx >= 0 && nx < n && ny >= 0 && ny < n) {
                 char s = mat[nx][ny];
+
+                if (init == 'B' && s == 'P'){
+                    p = 1;
+                    b = 1;
+                }
                 
                 if (s == 'B' && !vis[make_pair(nx, ny)]) {
                     vis[make_pair(nx, ny)] = 1;
@@ -46,8 +52,8 @@ void mini_bfs(int x, int y, map <pair <int, int>, int> &vis) {
 
         q.pop();
     }
-
-    fighter_pos = p && b ? fighter_pos + 1: fighter_pos;
+    if (init == 'B')
+        fighter_pos = p && b ? fighter_pos + 1: fighter_pos;
 }
 
 void bfs(int x, int y) {
@@ -122,7 +128,7 @@ void solve() {
         }
     }
 
-    printf("Total %d group(s) are in fighting position.\n\n", fighter_pos);
+    printf("Total %d group(s) are in fighting position.\n\n", fighter_pos * 2);
 }
 
 int main(){
